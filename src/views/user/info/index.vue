@@ -57,9 +57,12 @@
                     <span class="text-caption mx-2">{{ t('likes') }}:{{ i.likes }}</span>
                     <span class="text-caption">   {{ t('comment') }}:{{ i.comments }}</span>
                   </div>
-                  <span class="text-caption">
+                  <div class="text-caption" v-show="width>400">
                   {{ dayjs(i.create_time).fromNow() }}
-                 </span>
+                 </div>
+                </div>
+                <div class="text-caption" v-show="width<400">
+                  {{ dayjs(i.create_time).fromNow() }}
                 </div>
               </template>
             </v-list-item>
@@ -84,14 +87,16 @@ import {useUser} from "@/store/user";
 import {useI18n} from "vue-i18n";
 import {useArticle} from "@/store/article";
 import {useRouter} from "vue-router";
+import {useDisplay} from "vuetify";
 
 const {proxy} = getCurrentInstance() as any;
 const dayjs = proxy.dayjs
 
 const router = useRouter()
+const {width} = useDisplay()
 
 const {t} = useI18n()
-const {get,user} = useUser()
+const {get, user} = useUser()
 const {list} = useArticle()
 const data = reactive({
   userInfo: null,
@@ -119,13 +124,22 @@ onMounted(async () => {
 })
 
 const getArticles = async (page: number) => {
-  const {results} = await list({author: data.userInfo.username, pagesize: data.page.pagesize, page, order: data.page.order})
+  const {results} = await list({
+    author: data.userInfo.username,
+    pagesize: data.page.pagesize,
+    page,
+    order: data.page.order
+  })
   data.articles = results
 }
 
 const init = async (id: number) => {
   data.userInfo = await get(id)
-  const {count, results} = await list({author: data.userInfo.username, pagesize: data.page.pagesize, order: data.page.order})
+  const {count, results} = await list({
+    author: data.userInfo.username,
+    pagesize: data.page.pagesize,
+    order: data.page.order
+  })
   data.articles = results
   data.page.count = Math.ceil(count / data.page.pagesize)
 }

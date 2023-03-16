@@ -10,12 +10,12 @@
         <p class="text-subtitle-2 text-grey mb-6">{{ t('sign_in_help') }}</p>
         <v-form ref="form" v-model="valid" lazy-validation>
           <v-text-field :label="t('username')" v-model="userInfo.username" color="primary" variant="outlined"
-                        density="comfortable" :rules="nameRules">
+                        density="comfortable" :rules="nameRules" @keyup.enter="login">
 
           </v-text-field>
           <v-text-field :label="t('password')" v-model="userInfo.password" color="primary" variant="outlined"
                         density="comfortable"
-                        type="password" :rules="passwordRules"></v-text-field>
+                        type="password" :rules="passwordRules" @keyup.enter="login"></v-text-field>
           <div class="d-flex justify-space-between align-end">
             <div class="d-flex">
               <v-btn color="primary" variant="tonal" class="mr-1" @click="login">{{
@@ -283,8 +283,6 @@ export default defineComponent({
         if (res.status === 200) {
           router.push('/articles')
         } else {
-          localStorage.removeItem('refresh')
-          localStorage.removeItem('token')
           show.value = true
         }
       })

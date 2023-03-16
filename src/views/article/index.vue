@@ -1,5 +1,5 @@
 <template>
-  <v-row class="pa-3 pa-sm-6">
+  <v-row class="pa-3 pa-sm-6 mb-0">
     <TransitionGroup :css="false"
                      @enter="onEnter">
       <v-col cols="12" :sm="mode ? 6 : 12" :md="mode ? 4 : 12" v-for="(i,k) in articles" :key="i.id" :data-index="k">

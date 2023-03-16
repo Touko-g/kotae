@@ -1,7 +1,7 @@
 <template>
   <div class="h-100 d-flex flex-column align-center">
     <div class="top d-flex justify-center align-center" style="flex: 1">
-      <v-btn icon="mdi-chevron-up" variant="flat" @click="pre" v-show="sum>1">
+      <v-btn size="small" icon="mdi-chevron-up" variant="flat" @click="pre" v-show="sum>1">
 
       </v-btn>
     </div>
@@ -9,7 +9,7 @@
       <slot/>
     </div>
     <div class="bottom d-flex justify-center align-center" style="flex: 1">
-      <v-btn icon="mdi-chevron-down" variant="flat" @click="next" v-show="sum>1">
+      <v-btn size="small" icon="mdi-chevron-down" variant="flat" @click="next" v-show="sum>1">
 
       </v-btn>
     </div>

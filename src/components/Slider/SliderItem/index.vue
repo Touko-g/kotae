@@ -1,6 +1,6 @@
 <template>
   <Transition @enter="onEnter" @leave="onLeave">
-    <div v-show="currentIndex===index">
+    <div v-show="currentIndex===index" class="text-center">
       <slot/>
     </div>
   </Transition>

@@ -85,10 +85,10 @@
   <v-navigation-drawer width="60" v-if="!mobile" permanent location="right" elevation="4">
     <slider>
       <slider-item :key="4">
-        <v-btn icon v-for="i in themes" :key="i.name" :color="i.color" @click="theme.global.name.value=i.name"
-               class="my-2">
+        <v-btn size="small" icon v-for="i in themes" :key="i.name" :color="i.color" @click="theme.global.name.value=i.name"
+               class="mt-2">
         </v-btn>
-        <v-btn icon @click="ct=true">
+        <v-btn size="small" class="mt-2" icon @click="ct=true">
           <v-icon>mdi-palette</v-icon>
           <v-tooltip
               activator="parent"
@@ -98,11 +98,11 @@
         </v-btn>
       </slider-item>
       <slider-item :key="2">
-        <v-btn class="my-2" icon="mdi-dots-grid" @click="mode=true"/>
-        <v-btn icon="mdi-format-list-bulleted" @click="mode=false"/>
+        <v-btn size="small" class="my-2" icon="mdi-dots-grid" @click="mode=true"/>
+        <v-btn size="small" icon="mdi-format-list-bulleted" @click="mode=false"/>
       </slider-item>
       <slider-item :key="3">
-        <v-btn class="my-2" icon @click="router.push({name:'chat_public'})">
+        <v-btn size="small" class="my-2" icon @click="router.push({name:'chat_public'})">
           <v-icon>mdi-emoticon-lol-outline</v-icon>
           <v-tooltip
               activator="parent"
@@ -112,7 +112,7 @@
         </v-btn>
       </slider-item>
       <slider-item :key="1">
-        <v-btn class="my-2" :icon="audioPlay ? 'mdi-music-note-off' :'mdi-music-note-eighth'"
+        <v-btn size="small" class="my-2" :icon="audioPlay ? 'mdi-music-note-off' :'mdi-music-note-eighth'"
                @click="play">
         </v-btn>
         <audio ref="audio"

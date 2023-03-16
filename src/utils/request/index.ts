@@ -90,34 +90,36 @@ instance.interceptors.response.use((response: AxiosResponse) => {
     // }
 
     if (
-        error.response.status === 401 &&
-        originalRequest.url === 'token/refresh/' || originalRequest.url === 'token/verify/'
-    ) {
-        snackbar.error('授权过期请重新登录')
-        localStorage.removeItem('refresh')
-        localStorage.removeItem('token')
-        window.location.href = '/login/';
-        return Promise.reject(error);
-    }
-
-    if (
-        error.response.data.code === 'token_not_valid' &&
-        error.response.status === 401 &&
-        error.response.statusText === 'Unauthorized'
+        error.response.data.code === 'token_not_valid' && (error.response.status === 401 || error.response.status === 403)
     ) {
         const refresh_token = localStorage.getItem('refresh');
         if (refresh_token) {
             const {refresh} = useAuth()
-            await refresh({refresh: refresh_token})
-            if (!['article_create', 'article_edit'].includes(<string>router.currentRoute.value.name)) {
-                config.reload()
-            }
+            refresh({refresh: refresh_token}).then(res=>{
+                if (!['article_create', 'article_edit'].includes(<string>router.currentRoute.value.name)) {
+                    config.reload()
+                }
+                if (router.currentRoute.value.name==='login'){
+                    router.push('/articles')
+                }
+            })
         } else {
             snackbar.error('授权过期请重新登录')
             localStorage.removeItem('refresh')
             localStorage.removeItem('token')
             window.location.href = '/login/';
         }
+    }
+
+    if (
+        error.response.status === 401 &&
+        originalRequest.url === 'token/refresh/'
+    ) {
+        snackbar.error('token已无法刷新请重新登录')
+        localStorage.removeItem('refresh')
+        localStorage.removeItem('token')
+        window.location.href = '/login/';
+        return Promise.reject(error);
     }
     return Promise.reject(error);
 
