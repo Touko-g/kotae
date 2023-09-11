@@ -1,5 +1,5 @@
 <template>
-  <v-container class="mt-sm-16" v-show="show">
+  <v-container :class="smAndDown ? 'mt-6' : 'mt-12' " v-show="show">
     <v-row>
       <v-col cols="12">
         <h1 class="text-uppercase">{{ t('sign_in') }}</h1>
@@ -206,12 +206,14 @@ import {defineComponent, reactive, ref, toRefs} from 'vue'
 import {useI18n} from "vue-i18n";
 import {useAuth} from "@/store/auth";
 import {useRouter} from "vue-router";
+import {useDisplay} from "vuetify";
 
 export default defineComponent({
   name: 'index',
   setup() {
     const {t} = useI18n()
     const {signIn, code, pswCode, register, resetPassword, verify} = useAuth()
+    const {smAndDown} = useDisplay()
     const router = useRouter()
     const data = reactive({
       form: null,
@@ -355,7 +357,7 @@ export default defineComponent({
     }
 
     return {
-      t, ...toRefs(data), signIn, reset, login, getCode, signUp, getPswCode, pswReset, resetPsw, show
+      t, ...toRefs(data), signIn, reset, login, getCode, signUp, getPswCode, pswReset, resetPsw, show,smAndDown
     }
   }
 })
