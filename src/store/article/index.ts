@@ -7,6 +7,7 @@ import {
     postSearch,
     postArticle,
     editArticle,
+    delArticle,
     addParams,
     search,
     params
@@ -59,6 +60,18 @@ export const useArticle = defineStore('article', {
             try {
                 const {data} = await getArticles(params)
                 return data
+            } catch (e) {
+                const {data, status} = e.response
+                if (status !== 401) {
+                    snackbar.error(`CODE:${status} ${Object.entries(data)[0].toString().replace(',', ':')}`)
+                }
+            }
+        },
+        async del(id: string | number){
+            const snackbar = useSnackBar()
+            try {
+                await delArticle(id)
+                snackbar.success(`Delete successfully`)
             } catch (e) {
                 const {data, status} = e.response
                 if (status !== 401) {

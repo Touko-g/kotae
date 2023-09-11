@@ -1,5 +1,7 @@
 <template>
   <v-app>
+    <v-progress-linear :model-value="percent" color="primary" style="z-index: 9999" :height="2"
+                       v-show="percent"></v-progress-linear>
     <v-app-bar height="22" elevation="2" style="-webkit-app-region: drag;">
       <v-spacer></v-spacer>
       <v-btn size="small" @click="setScreen('min')" style="-webkit-app-region: no-drag;">
@@ -30,16 +32,23 @@ import Fab from '@/components/Fab/index'
 import {useRoute, useRouter} from "vue-router";
 import anime from "animejs";
 import {onMounted, provide, ref} from "vue";
+import {useSnackBar} from "@/store/snackbar";
+import {useI18n} from "vue-i18n";
 
 const router = useRouter()
 const route = useRoute()
+const snackbar = useSnackBar()
+const {t} = useI18n()
 
 const flag = ref(false)
 const clickFlag = ref(false)
-const name = 'Kotae!'
+const name = 'Kotae'
 const mode = ref(true)
 
 const scrollTop = ref(0)
+const percent = ref(0)
+
+const token = localStorage.getItem('token') || ''
 
 provide('mode', mode)
 const onEnter = (el: any, done: any) => {
@@ -69,7 +78,11 @@ const jump = () => {
   if (clickFlag.value) {
     flag.value = false
     setTimeout(() => {
-      router.push('/login')
+      if (token){
+        router.push('/articles')
+      }else {
+        router.push('/login')
+      }
     }, 1500)
   }
 }
@@ -78,9 +91,6 @@ const setScreen = (status: string) => {
   window.controlAPI.setScreen(status)
 }
 
-window.controlAPI.checkUpdate((event,value)=>{
-  alert(JSON.stringify(value))
-})
 
 onMounted(() => {
   flag.value = true
@@ -89,6 +99,24 @@ onMounted(() => {
   }, 1400)
   window.addEventListener('scroll', e => {
     scrollTop.value = document.documentElement.scrollTop || document.body.scrollTop;
+  })
+  window.controlAPI.checkUpdate((event, data) => {
+    switch (data.key) {
+      case "download_progress":
+        percent.value = data.value
+        break;
+      case "update_available":
+        snackbar.info(t('update_available'))
+        break;
+      case "update_downloaded":
+        snackbar.success(t('update_downloaded'))
+        break;
+      case "error":
+        snackbar.error(data.value)
+        break;
+      default:
+        break;
+    }
   })
 })
 </script>

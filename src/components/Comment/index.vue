@@ -1,8 +1,14 @@
 <template>
   <div style="padding: 0 1rem 0 1rem">
     <div class="d-flex">
-      <v-text-field density="comfortable" color="primary" variant="underlined" v-model="comment"/>
-      <v-btn variant="flat" color="primary" @click="postComment" class="ml-4">{{ t('pcomment') }}</v-btn>
+      <v-text-field density="comfortable" color="primary" variant="underlined" v-model="comment" @keyup.enter="postComment">
+        <template v-slot:prepend-inner>
+          <v-btn icon="mdi-emoticon-sick-outline" size="small" color="primary" variant="plain" @click="emojiDialog=true"></v-btn>
+        </template>
+        <template v-slot:append>
+          <v-btn variant="flat" color="primary" @click="postComment" class="ml-4">{{ t('pcomment') }}</v-btn>
+        </template>
+      </v-text-field>
     </div>
     <div class="text-capitalize text-h5 font-weight-bold d-flex justify-space-between align-center">{{ t('comment') }}:
       <v-btn v-show="page.count" @click="byTime" variant="text">{{ t('by_time') }}
@@ -16,7 +22,7 @@
     <div ref="el">
       <DelayFade>
         <div v-for="(i,k) in comments" :key="i.id" class="d-flex align-start my-6" :data-index="k">
-          <v-btn size="45" icon variant="flat" class="mr-4">
+          <v-btn size="45" icon variant="flat" class="mr-4" @click="router.push({name:'userinfo',params:{id:i.user_info.id}})">
             <v-avatar
                 size="45"
             >
@@ -29,14 +35,14 @@
           <div>
             <div class="text-grey font-weight-bold">{{ i.user_info.username }}
               <span class="text-grey ml-1" v-if="mobile&&i.ip_address&&i.ip_address!=='未知'">
-                {{ i.ip_address.match(/(.+(?=省))/) ?  i.ip_address.match(/(.+(?=省))/)[0] : i.ip_address}}
+                {{ i.ip_address.match(/(.+(?=省))/) ? i.ip_address.match(/(.+(?=省))/)[0] : i.ip_address }}
               </span>
             </div>
             <div style="word-break: break-word">{{ i.content }}</div>
             <div class="text-grey"></div>
             <div class="d-flex mt-1">
               <div class="text-grey mr-2" v-if="!mobile&&i.ip_address&&i.ip_address!=='未知'">
-                {{ i.ip_address.match(/(.+(?=省))/) ?  i.ip_address.match(/(.+(?=省))/)[0] : i.ip_address}}
+                {{ i.ip_address.match(/(.+(?=省))/) ? i.ip_address.match(/(.+(?=省))/)[0] : i.ip_address }}
               </div>
               <div class="text-grey">{{ timeFormat(i.create_time) }}</div>
               <v-btn variant="text" density="compact" color="grey" class="mx-2" @click="open(i.id,i.user_info,k)">
@@ -47,7 +53,7 @@
               <div v-for="(j,key) in i.comment_replies" :key="j.id">
                 <div v-show="key<1||(i.id===data.flag_id)">
                   <div class="d-flex align-start my-6">
-                    <v-btn size="40" icon variant="flat" class="mr-4">
+                    <v-btn size="40" icon variant="flat" class="mr-4"  @click="router.push({name:'userinfo',params:{id:j.user_info.id}})">
                       <v-avatar
                           size="40"
                       >
@@ -61,7 +67,7 @@
                       <div class="text-grey font-weight-bold">{{ j.user_info.username }}
                         <span class="text-grey ml-1"
                               v-if="mobile&&j.ip_address&&j.ip_address!=='未知'">
-                                     {{ j.ip_address.match(/(.+(?=省))/) ?  j.ip_address.match(/(.+(?=省))/)[0] : j.ip_address}}
+                                     {{ j.ip_address.match(/(.+(?=省))/) ? j.ip_address.match(/(.+(?=省))/)[0] : j.ip_address }}
                         </span>
                       </div>
                       <div style="word-break: break-word"><span v-show="j.reply_user" class="text-primary">@{{
@@ -70,7 +76,7 @@
                       </div>
                       <div class="d-flex mt-1">
                         <div class="text-grey mr-2" v-if="!mobile&&j.ip_address&&j.ip_address!=='未知'">
-                          {{ j.ip_address.match(/(.+(?=省))/) ?  j.ip_address.match(/(.+(?=省))/)[0] : j.ip_address}}
+                          {{ j.ip_address.match(/(.+(?=省))/) ? j.ip_address.match(/(.+(?=省))/)[0] : j.ip_address }}
                         </div>
                         <div class="text-grey">{{ timeFormat(j.create_time) }}</div>
                         <v-btn variant="text" density="compact" color="grey" class="mx-2"
@@ -101,7 +107,7 @@
       <div v-else class="my-2 text-grey">{{ t('noc') }}</div>
     </div>
   </div>
-  <v-dialog v-model="data.dialog" @click:outside="dialogReset">
+  <v-dialog v-model="data.dialog" @click:outside="dialogReset" width="auto" transition="dialog-top-transition">
     <v-card width="300">
       <v-card-title>
         To : {{ data.reply_user_info.username }}
@@ -109,6 +115,8 @@
       <v-card-text>
         <v-textarea density="comfortable" color="primary" variant="underlined"
                     v-model="data.reply_info.content"/>
+        <v-btn icon="mdi-emoticon-sick-outline" color="primary" class="mr-2" @click="emojiDialog=true"
+               variant="plain"></v-btn>
       </v-card-text>
       <v-card-actions>
         <v-spacer/>
@@ -116,6 +124,9 @@
         <v-btn @click="dialogReset">{{ t('cancel') }}</v-btn>
       </v-card-actions>
     </v-card>
+  </v-dialog>
+  <v-dialog v-model="emojiDialog" @click:outside="emojiDialog=false" width="auto" transition="dialog-top-transition">
+    <EmojiPicker :native="true" @select="onSelectEmoji"/>
   </v-dialog>
 </template>
 
@@ -127,10 +138,17 @@ import {useI18n} from "vue-i18n";
 import {useDisplay} from "vuetify";
 import DelayFade from '@/components/DelayFade'
 
+// import picker compopnent
+import EmojiPicker from 'vue3-emoji-picker'
+// import css
+import 'vue3-emoji-picker/css'
+import {useRouter} from "vue-router";
+
 const {proxy} = getCurrentInstance() as any;
 const dayjs = proxy.dayjs
 const {t} = useI18n()
 const {mobile} = useDisplay()
+const router = useRouter()
 
 interface Props {
   userId: number
@@ -166,6 +184,8 @@ const page = reactive({
   pagesize: 10,
   count: 0
 })
+
+const emojiDialog = ref(false)
 
 
 watch(() => props.article, async value => {
@@ -255,10 +275,19 @@ const dialogReset = () => {
 const timeFormat = (time: string) => {
   const nowY = new Date().getFullYear()
   const rY = dayjs(time).format('YYYY')
-  if (nowY.toString()===rY){
+  if (nowY.toString() === rY) {
     return dayjs(time).format('MM-DD HH:mm')
-  }else {
+  } else {
     return dayjs(time).format('YYYY-MM-DD')
+  }
+}
+
+// event callback
+const onSelectEmoji = (emoji: any) => {
+  if (data.dialog) {
+    data.reply_info.content += emoji.i
+  } else {
+    comment.value += emoji.i
   }
 }
 

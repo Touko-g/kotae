@@ -28,6 +28,8 @@ export const postArticle = (data: addParams) => request.post('article/create', d
 
 export const editArticle = (id: string | number, data: addParams) => request.put(`article/${id}/`, data)
 
+export const delArticle = (id:string|number)=>request.delete(`article/${id}/`)
+
 export const getSearch = () => request.get('search/?order=-hot&pagesize=5')
 
 export const postSearch = (data: search) => request.post('search/', data)

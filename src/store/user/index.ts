@@ -14,6 +14,7 @@ export const useUser = defineStore('user', {
             const snackbar = useSnackBar()
             try {
                 const {data} = await getUser(id)
+                console.log(data)
                 return data
             } catch (e) {
                 const {data, status} = e.response

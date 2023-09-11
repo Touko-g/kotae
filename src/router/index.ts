@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory,createWebHashHistory, RouteRecordRaw} from 'vue-router'
+import {createRouter, createWebHashHistory, createWebHistory, RouteRecordRaw} from 'vue-router'
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -46,14 +46,14 @@ const routes: Array<RouteRecordRaw> = [
                 component: () => import("@/views/article/like/index.vue")
             },
             {
-                path: "/article/search",
+                path: "/article/search/:name/:type",
                 name: "article_search",
-                props: true,
                 component: () => import("@/views/article/search/index.vue")
             },
             {
-                path: "/user/userinfo",
+                path: "/user/:id",
                 name: "userinfo",
+                props:true,
                 component: () => import("@/views/user/info/index.vue")
             },
             {
@@ -75,6 +75,12 @@ const routes: Array<RouteRecordRaw> = [
                 path: "/chat/public",
                 name: "chat_public",
                 component: () => import("@/views/beta/chat/index.vue")
+            },
+            {
+                path:"/user/:username/photo",
+                name:"photo",
+                props:true,
+                component:()=>import("@/views/user/info/photo/index.vue")
             }
         ]
     },

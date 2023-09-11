@@ -1,7 +1,7 @@
 <template>
   <p
       class="
-                        my-3
+                        my-6
                         text-h5
                         font-weight-black
                         text-uppercase
@@ -14,7 +14,7 @@
     {{ id ? t('edit') : t('add') }}
   </p>
   <v-divider color="surface"/>
-  <v-form class="ma-6" v-model="valid" lazy-validation ref="form" id="form">
+  <v-form class="mb-6 mx-6" v-model="valid" lazy-validation ref="form" id="form">
     <v-text-field :label="t('title')" v-model="article.title" color="primary" variant="outlined"
                   density="comfortable"
                   :rules="titleRules"

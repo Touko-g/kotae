@@ -3,15 +3,18 @@
     <TransitionGroup :css="false"
                      @enter="onEnter">
       <v-col cols="12" :sm="mode ? 6 : 12" :md="mode ? 4 : 12" v-for="(i,k) in articles" :key="i.id" :data-index="k">
-        <v-card class="ma-2" @click="goDetail(i.id)">
+        <v-card class="ma-2 position-relative" @click="goDetail(i.id)">
+          <v-sheet class="position-absolute mt-2" style="right: 0;rotate: 30deg;background-color: transparent"
+                   v-if="!i.public">{{ t('deleted') }}
+          </v-sheet>
           <v-card-title class="d-flex align-center">
-            <v-btn icon variant="flat">
+            <v-btn icon variant="flat" @click.stop="router.push({name:'userinfo',params:{id:i.owner.id}})">
               <v-avatar
-                  size="40"
+                size="40"
               >
                 <v-img
-                    :src="i.owner.avatar"
-                    alt="avatar"
+                  :src="i.owner.avatar"
+                  alt="avatar"
                 ></v-img>
               </v-avatar>
             </v-btn>
@@ -63,14 +66,14 @@ const dayjs = proxy.dayjs
 const {t} = useI18n()
 const snackbar = useSnackBar()
 const data = reactive({
-  articles: [],
+  articles: [] as any[],
   page: {
     page: 1,
     count: 0,
   }
 })
 
-const observer = ref(null);
+const observer = ref<null | IntersectionObserver>(null);
 const scrollRef = ref({});
 
 const mode = inject('mode')

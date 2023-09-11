@@ -1,7 +1,6 @@
 {
   "name": "frontend",
   "version": "1.0.0",
-  "private": true,
   "main": "electron/main.js",
   "scripts": {
     "serve": "vite preview",
@@ -16,14 +15,16 @@
     "url": "git+https://github.com/Touko-g/kotae.git"
   },
   "publish": {
-    "provider": "github",
+    "provider": "generic",
     "releaseType": "release",
-    "domain": "https://kotae.cn"
+    "url": "https://kotae.cn/update/"
   },
   "build": {
     "appId": "hantan.kotae",
     "productName": "Kotae",
+    "asar": true,
     "win": {
+      "icon": "public/kotae.png",
       "target": "nsis"
     },
     "directories": {
@@ -56,6 +57,7 @@
     "vue": "^3.2.25",
     "vue-i18n": "^9.1.10",
     "vue-router": "^4.1.2",
+    "vue3-emoji-picker": "^1.1.7",
     "vuetify": "^3.0.0-beta.0",
     "webfontloader": "^1.0.0"
   },

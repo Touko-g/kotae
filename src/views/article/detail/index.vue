@@ -2,7 +2,7 @@
   <v-card variant="text" v-if="article" class="pa-2 pa-sm-8">
     <v-card-title>
       <div class="d-flex">
-        <v-btn size="60" icon variant="flat">
+        <v-btn size="60" icon variant="flat" @click="router.push({name:'userinfo',params:{id:article.owner.id}})">
           <v-avatar
               size="60"
           >
@@ -52,8 +52,11 @@
           <span>{{ comments }}</span>
         </div>
         <div class="d-flex">
-          <v-btn variant="text" density="small" v-if="user.id === article.owner.id"
-                 @click="router.push(`/article/edit/${article.id}`)">{{ t('edit') }}
+          <v-btn icon="mdi-circle-edit-outline" variant="text" v-if="user.id === article.owner.id"
+                 @click="router.push(`/article/edit/${article.id}`)">
+          </v-btn>
+          <v-btn icon="mdi-trash-can-outline" variant="text"
+                 v-if="article.public&&(user.id === article.owner.id || user.id === 1)" @click="openDel">
           </v-btn>
           <v-btn icon="mdi-thumb-up-outline" variant="text" @click="toggleLike(article.id)"
                  :color="likeFlag&&'primary'"/>
@@ -63,7 +66,28 @@
     </div>
     <Comment :userId="user.id" :article="article.id" @changeComment="changeComment"/>
   </v-card>
-
+  <v-dialog v-model="delDialog" width="auto">
+    <v-card>
+      <v-card-title>
+        {{ t('del_article') }}
+      </v-card-title>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn
+            variant="text"
+            @click="delDialog = false"
+        >
+          {{ t('cancel') }}
+        </v-btn>
+        <v-btn
+            variant="text"
+            @click="delArticle"
+        >
+          {{ t('confirm') }}
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script setup lang="ts">
@@ -103,7 +127,7 @@ interface Article {
 
 const props = defineProps<Props>()
 
-const {get} = useArticle()
+const {get, del} = useArticle()
 const {addLike, getLikes} = useLike()
 const article = ref(null)
 
@@ -117,6 +141,8 @@ const img = ref({
       height: ''
     }
 )
+
+const delDialog = ref(false)
 watch(() => props.id, async (value, oldValue) => {
   if (value) {
     await init(value)
@@ -168,6 +194,16 @@ const toggleLike = async (id: number) => {
 
 const changeComment = (num: number) => {
   comments.value = num
+}
+
+const openDel = () => {
+  delDialog.value = true
+}
+
+const delArticle = async () => {
+  await del(article.value.id)
+  delDialog.value = false
+  router.push('/articles')
 }
 
 </script>

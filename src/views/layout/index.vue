@@ -52,15 +52,15 @@
           <v-icon>mdi-dots-vertical</v-icon>
         </v-btn>
       </template>
-      <v-list>
+      <v-list width="225">
         <v-list-item prepend-icon="mdi-message-reply-outline" @click="router.push({name:'user_message'})">
           <div class="w-100 d-flex justify-space-between align-center">
             {{ t('message') }}
             <v-badge
-                v-if="notice"
-                color="primary"
-                :content="notice"
-                inline
+              v-if="notice"
+              color="primary"
+              :content="notice"
+              inline
             ></v-badge>
           </div>
         </v-list-item>
@@ -73,7 +73,7 @@
         <v-list-item prepend-icon="mdi-key" @click="router.push({name:'user_editpsw'})">
           {{ t('change_psw') }}
         </v-list-item>
-        <v-list-item prepend-icon="mdi-human" @click="router.push({name:'userinfo'})">
+        <v-list-item prepend-icon="mdi-human" @click="router.push({name:'userinfo',params:{id:user.user.id}})">
           {{ t('about_me') }}
         </v-list-item>
         <v-list-item prepend-icon="mdi-logout" @click="logout">
@@ -85,35 +85,39 @@
   <v-navigation-drawer width="60" v-if="!mobile" permanent location="right" elevation="4">
     <slider>
       <slider-item :key="4">
-        <v-btn size="small" icon v-for="i in themes" :key="i.name" :color="i.color" @click="theme.global.name.value=i.name"
-               class="mt-2">
-        </v-btn>
-        <v-btn size="small" class="mt-2" icon @click="ct=true">
-          <v-icon>mdi-palette</v-icon>
-          <v-tooltip
+        <v-sheet class="d-flex flex-column">
+          <v-btn icon v-for="i in themes" :key="i.name" :color="i.color" @click="theme.global.name.value=i.name"
+                 class="my-2" size="42">
+          </v-btn>
+          <v-btn icon @click="ct=true" size="42">
+            <v-icon>mdi-palette</v-icon>
+            <v-tooltip
               activator="parent"
               location="start"
-          > {{ t('ct') }}
-          </v-tooltip>
-        </v-btn>
+            > {{ t('ct') }}
+            </v-tooltip>
+          </v-btn>
+        </v-sheet>
       </slider-item>
       <slider-item :key="2">
-        <v-btn size="small" class="my-2" icon="mdi-dots-grid" @click="mode=true"/>
-        <v-btn size="small" icon="mdi-format-list-bulleted" @click="mode=false"/>
+        <v-sheet class="d-flex flex-column">
+          <v-btn class="my-2" icon="mdi-dots-grid" @click="mode=true" size="42"/>
+          <v-btn icon="mdi-format-list-bulleted" @click="mode=false" size="42"/>
+        </v-sheet>
       </slider-item>
       <slider-item :key="3">
-        <v-btn size="small" class="my-2" icon @click="router.push({name:'chat_public'})">
+        <v-btn class="my-2" icon @click="router.push({name:'chat_public'})" size="42">
           <v-icon>mdi-emoticon-lol-outline</v-icon>
           <v-tooltip
-              activator="parent"
-              location="start"
+            activator="parent"
+            location="start"
           > {{ t('public_chat') }}
           </v-tooltip>
         </v-btn>
       </slider-item>
       <slider-item :key="1">
-        <v-btn size="small" class="my-2" :icon="audioPlay ? 'mdi-music-note-off' :'mdi-music-note-eighth'"
-               @click="play">
+        <v-btn class="my-2" :icon="audioPlay ? 'mdi-music-note-off' :'mdi-music-note-eighth'"
+               @click="play" size="42">
         </v-btn>
         <audio ref="audio"
                :src="audioUrl"
@@ -125,17 +129,17 @@
   <v-main>
     <router-view v-if="config.isRouterAlive"/>
   </v-main>
-  <v-dialog v-model="show" :fullscreen="mobile">
-    <v-card :width="mobile ? 300 : 800" height="500">
+  <v-dialog v-model="show" :fullscreen="mobile" width="auto">
+    <v-card :width="mobile ? 'auto' : 800" height="500">
       <v-card-title>
         {{ t('search_by') }}:
         <v-radio-group density="compact" :inline="!mobile" v-model="radioGroup">
           <v-radio
-              class="text-overline"
-              v-for="n in radios"
-              :key="n"
-              :label="n"
-              :value="n"
+            class="text-overline mx-2"
+            v-for="n in radios"
+            :key="n"
+            :label="n"
+            :value="n"
           ></v-radio>
         </v-radio-group>
       </v-card-title>
@@ -143,20 +147,20 @@
         <v-row>
           <v-col cols="12">
             <v-text-field
-                :label="t('search_article')"
-                v-model="searchValue"
-                density="comfortable"
-                :hint="`by ${radioGroup}`"
-                variant="outlined"
-                clearable
-                @update:modelValue="searchArticle"
+              :label="t('search_article')"
+              v-model="searchValue"
+              density="comfortable"
+              :hint="`by ${radioGroup}`"
+              variant="outlined"
+              clearable
+              @update:modelValue="searchArticle"
             ></v-text-field>
             <div class="d-flex justify-space-between align-center">
               <p class="text-button">{{ topShow ? t('tts') : t('sla') + ' : ' + searchValue }}</p>
               <v-btn variant="text" size="small" v-show="!topShow" @click="jump(searchValue)">view all</v-btn>
             </div>
 
-            <v-divider color="surface"/>
+            <v-divider/>
           </v-col>
           <Transition>
             <v-col cols="12" v-if="topShow">
@@ -166,19 +170,14 @@
                              density="compact"
                              @click="jump(i.name)"
                 >
-                  <v-list-item-icon :icon="`mdi-numeric-${k+1}`" size="x-large">
-
-                  </v-list-item-icon>
-                  <v-list-item-title>
+                  <v-list-item-title class="d-flex align-center">
+                    <v-icon :icon="`mdi-numeric-${k+1}`" size="x-large" class="mx-1" color="white"></v-icon>
                     {{ i.name.length > 6 ? i.name.slice(0, 6) + '...' : i.name }}
                   </v-list-item-title>
-                  <v-spacer/>
-                  <v-list-item-subtitle>
-                    <div class="d-flex justify-center align-center">
-                      <v-icon icon="mdi-fire"></v-icon>
-                      <span class="text-subtitle-1" style="width: 20px">{{ i.hot }}</span>
-                    </div>
-                  </v-list-item-subtitle>
+                  <template v-slot:append>
+                    <v-icon icon="mdi-fire"></v-icon>
+                    <span class="text-subtitle-1 text-grey" style="width: 20px">{{ i.hot }}</span>
+                  </template>
                 </v-list-item>
               </v-list>
             </v-col>
@@ -189,20 +188,15 @@
                              density="compact"
                              @click="goDetail(i.id)"
                 >
-                  <v-list-item-icon :icon="`mdi-numeric-${k+1}`" size="x-large">
-
-                  </v-list-item-icon>
-                  <v-list-item-title>
+                  <v-list-item-title class="d-flex align-center">
+                    <v-icon :icon="`mdi-numeric-${k+1}`" size="x-large" class="mx-1" color="white"></v-icon>
                     {{ i.title.length > 6 ? i.title.slice(0, 6) + '...' : i.title }}
                   </v-list-item-title>
-                  <v-spacer/>
-                  <v-list-item-subtitle>
-                    <div class="d-flex justify-center align-center">
-                      <span>{{ i?.owner?.username }}</span>
-                      <v-divider class="mx-2" vertical color="surface"/>
-                      <span class="text-body-2">{{ dayjs(i.create_time).fromNow() }}</span>
-                    </div>
-                  </v-list-item-subtitle>
+                  <template v-slot:append>
+                    <span class="text-grey">{{ i?.owner?.username }}</span>
+                    <v-divider class="mx-2" vertical/>
+                    <span class="text-body-2 text-grey">{{ dayjs(i.create_time).fromNow() }}</span>
+                  </template>
                 </v-list-item>
               </v-list>
             </v-col>
@@ -211,8 +205,8 @@
       </v-card-text>
     </v-card>
   </v-dialog>
-  <v-dialog v-model="ct">
-    <v-card :width="mobile ? 300 : 800" height="500" color="white">
+  <v-dialog v-model="ct" width="auto">
+    <v-card :width="mobile ? 300 : 800" height="500">
       <v-card-title class="d-flex justify-space-between">
         {{ t('ct') }}
         <v-btn variant="text" @click="ct=false" icon="mdi-close"></v-btn>
@@ -221,35 +215,35 @@
         <v-row>
           <v-col>
             <v-color-picker
-                v-model="color"
-                class="ma-2"
-                :swatches="swatches"
-                show-swatches
-                style="background: #999999 !important;"
+              v-model="color"
+              class="ma-2"
+              :swatches="swatches"
+              show-swatches
+              style="background: #999999 !important;"
             ></v-color-picker>
           </v-col>
           <v-col class="d-flex flex-column justify-center">
             <div class="d-flex">
               <v-checkbox
-                  v-model="setTheme.background.check"
-                  :color="setTheme.background.color"
-                  label="background"
+                v-model="setTheme.background.check"
+                :color="setTheme.background.color"
+                label="background"
               ></v-checkbox>
               <v-sheet width="50" height="50" :color="setTheme.background.color"></v-sheet>
             </div>
             <div class="d-flex">
               <v-checkbox
-                  v-model="setTheme.surface.check"
-                  :color="setTheme.surface.color"
-                  label="surface"
+                v-model="setTheme.surface.check"
+                :color="setTheme.surface.color"
+                label="surface"
               ></v-checkbox>
               <v-sheet width="50" height="50" :color="setTheme.surface.color"></v-sheet>
             </div>
             <div class="d-flex">
               <v-checkbox
-                  v-model="setTheme.primary.check"
-                  :color="setTheme.primary.color"
-                  label="primary"
+                v-model="setTheme.primary.check"
+                :color="setTheme.primary.color"
+                label="primary"
               ></v-checkbox>
               <v-sheet width="50" height="50" :color="setTheme.primary.color"></v-sheet>
             </div>
@@ -419,7 +413,7 @@ const goDetail = (id: number) => {
 }
 
 const jump = (name: string) => {
-  router.push({params: {name, type: search.radioGroup}, name: 'article_search'})
+  router.push({name: 'article_search', params: {name, type: search.radioGroup}})
   search.show = false
 }
 

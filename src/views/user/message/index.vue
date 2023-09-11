@@ -244,7 +244,7 @@ onMounted(async () => {
     }
     return res
   }, {})
-  replyData.value = reply.reduce((res: any, cur: any) => {
+  replyData.value = reply&&reply.reduce((res: any, cur: any) => {
     if (cur.read) {
       res['read'] = [...(res['read'] || []), cur]
     } else {
@@ -252,7 +252,7 @@ onMounted(async () => {
     }
     return res
   }, {})
-  commentData.value = comment.reduce((res: any, cur: any) => {
+  commentData.value = comment&&comment.reduce((res: any, cur: any) => {
     if (cur.read) {
       res['read'] = [...(res['read'] || []), cur]
     } else {

@@ -54,8 +54,8 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
     (config: AxiosRequestConfig) => {
-        removeQueue(config)
-        addQueue(config)
+        // removeQueue(config)
+        // addQueue(config)
         const token = window.localStorage.getItem("token");
         if (token) {
             config.headers = {
@@ -70,7 +70,7 @@ instance.interceptors.request.use(
     })
 
 instance.interceptors.response.use((response: AxiosResponse) => {
-    removeQueue(response)
+    // removeQueue(response)
     return {
         data: response.data,
         status: response.status
@@ -90,37 +90,31 @@ instance.interceptors.response.use((response: AxiosResponse) => {
     // }
 
     if (
+        error.response.status === 401 &&
+        originalRequest.url === 'token/refresh/'
+    ) {
+        snackbar.error('授权过期请重新登录')
+        localStorage.clear()
+        router.push('/login')
+    }
+
+    if (
         error.response.data.code === 'token_not_valid' && (error.response.status === 401 || error.response.status === 403)
     ) {
         const refresh_token = localStorage.getItem('refresh');
         if (refresh_token) {
             const {refresh} = useAuth()
-            refresh({refresh: refresh_token}).then(res=>{
+            refresh({refresh: refresh_token}).then(res => {
                 if (!['article_create', 'article_edit'].includes(<string>router.currentRoute.value.name)) {
                     config.reload()
                 }
-                if (router.currentRoute.value.name==='login'){
+                if (router.currentRoute.value.name === 'login') {
                     router.push('/articles')
                 }
             })
-        } else {
-            snackbar.error('授权过期请重新登录')
-            localStorage.removeItem('refresh')
-            localStorage.removeItem('token')
-            window.location.href = '/login/';
         }
     }
 
-    if (
-        error.response.status === 401 &&
-        originalRequest.url === 'token/refresh/'
-    ) {
-        snackbar.error('token已无法刷新请重新登录')
-        localStorage.removeItem('refresh')
-        localStorage.removeItem('token')
-        window.location.href = '/login/';
-        return Promise.reject(error);
-    }
     return Promise.reject(error);
 
 })

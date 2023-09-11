@@ -1,5 +1,5 @@
 <template>
-  <v-container class="mt-sm-12" v-show="show">
+  <v-container class="mt-sm-16" v-show="show">
     <v-row>
       <v-col cols="12">
         <h1 class="text-uppercase">{{ t('sign_in') }}</h1>
@@ -45,10 +45,10 @@
         </template>
         <v-card-item>
           <v-tabs
-              fixed-tabs
-              v-model="tab"
-              color="primary"
-              :disabled="flag"
+            fixed-tabs
+            v-model="tab"
+            color="primary"
+            :disabled="flag"
           >
             <v-tab v-for="(v,k) in items" :key="v" :value="k">
               {{ t(`${v}`) }}
@@ -130,10 +130,10 @@
         </template>
         <v-card-item>
           <v-tabs
-              fixed-tabs
-              v-model="pswTab"
-              color="primary"
-              :disabled="pswFlag"
+            fixed-tabs
+            v-model="pswTab"
+            color="primary"
+            :disabled="pswFlag"
           >
             <v-tab v-for="(v,k) in pswItems" :key="v" :value="k">
               {{ t(`${v}`) }}
@@ -282,9 +282,9 @@ export default defineComponent({
       verify({token}).then(res => {
         if (res.status === 200) {
           router.push('/articles')
-        } else {
-          show.value = true
         }
+      }).catch(e => {
+        show.value = true
       })
     } else {
       show.value = true

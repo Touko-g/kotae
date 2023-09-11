@@ -6,16 +6,22 @@ let win
 
 //Basic flags
 autoUpdater.autoDownload = false;
-autoUpdater.autoInstallOnAppQuit = true;
+
+autoUpdater.setFeedURL({
+    provider: 'generic',
+    url: 'https://kotae.cn/update/'
+})
 
 const createWindow = () => {
     win = new BrowserWindow({
         width: 450,
         height: 700,
+        icon: path.join(__dirname, '../public/kotae.png'),
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
+            webSecurity:false
         },
-        frame: false
+        frame:false
     });
 
     // 加载页面文件
@@ -25,9 +31,8 @@ const createWindow = () => {
     } else {
         // 如果没有打包就直接从本地服务器加载
         win.loadURL('http://localhost:3000/');
+        win.webContents.openDevTools()
     }
-
-    win.webContents.openDevTools()
 };
 
 app.whenReady().then(() => {
@@ -73,29 +78,35 @@ app.whenReady().then(() => {
     });
 });
 
+const sendUpdateMessage = (win, key, value) => {
+    win && win.webContents.send('check-update', {key, value})
+}
+
 autoUpdater.checkForUpdates();
 
 /*New Update Available*/
 autoUpdater.on("update-available", (info) => {
     let pth = autoUpdater.downloadUpdate();
-    alert(`Update available. Current version ${app.getVersion()}`)
-    win.webContents.send('check-update', pth, `Update available. Current version ${app.getVersion()}`)
+    sendUpdateMessage(win, "update_available", "update_available")
 });
 
 autoUpdater.on("update-not-available", (info) => {
-    alert(`No update available. Current version ${app.getVersion()}`)
-    win.webContents.send('check-update', `No update available. Current version ${app.getVersion()}`)
+    sendUpdateMessage(win, "update_not_available", "update_not_available")
 });
 
 /*Download Completion Message*/
 autoUpdater.on("update-downloaded", (info) => {
-    alert(`Update downloaded. Current version ${app.getVersion()}`)
-    win.webContents.send('check-update', `Update downloaded. Current version ${app.getVersion()}`)
+    sendUpdateMessage(win, "update_downloaded", "update_downloaded")
+    autoUpdater.quitAndInstall()
+    app.quit()
 });
 
+autoUpdater.on('download-progress', (progress) => {
+    sendUpdateMessage(win, "download_progress", progress.percent)
+})
+
 autoUpdater.on("error", (error) => {
-    alert(JSON.stringify(error))
-    win.webContents.send('check-update', error)
+    sendUpdateMessage(win, "error", error || 'Error checking for updates')
 });
 
 
